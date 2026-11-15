@@ -36,6 +36,7 @@ import {
   type UserProfile,
 } from '../types';
 import { deviceTypeLabel } from '../utils/device';
+import { saveTextFileCrossPlatform } from '../utils/exportExcel';
 import { formatDateTime } from '../utils/format';
 
 export const StaffAuditView: React.FC = () => {
@@ -247,13 +248,14 @@ export const StaffAuditView: React.FC = () => {
     setSaving(true);
     try {
       const json = await exportStoreBackup();
-      const blob = new Blob([json], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `alhussam_backup_${new Date().toISOString().slice(0, 10)}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
+      const ok = saveTextFileCrossPlatform(
+        json,
+        `alhussam_backup_${new Date().toISOString().slice(0, 10)}.json`,
+        'application/json'
+      );
+      if (!ok) {
+        throw new Error('تعذر حفظ ملف النسخة الاحتياطية على الجهاز.');
+      }
       setFeedback({ type: 'ok', text: 'تم تنزيل ملف النسخة الاحتياطية بنجاح.' });
     } catch (err) {
       setFeedback({
@@ -300,10 +302,10 @@ export const StaffAuditView: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-1 p-1 bg-slate-200/70 rounded-xl">
+        <div className="flex items-center gap-1 p-1 bg-slate-200/70 rounded-xl max-w-full overflow-x-auto">
           <button
             onClick={() => setTab('staff')}
-            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg cursor-pointer ${
+            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg cursor-pointer whitespace-nowrap shrink-0 ${
               tab === 'staff' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600'
             }`}
           >
@@ -312,7 +314,7 @@ export const StaffAuditView: React.FC = () => {
           </button>
           <button
             onClick={() => setTab('devices')}
-            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg cursor-pointer ${
+            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg cursor-pointer whitespace-nowrap shrink-0 ${
               tab === 'devices' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600'
             }`}
           >
@@ -320,7 +322,7 @@ export const StaffAuditView: React.FC = () => {
           </button>
           <button
             onClick={() => setTab('audit')}
-            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg cursor-pointer ${
+            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg cursor-pointer whitespace-nowrap shrink-0 ${
               tab === 'audit' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600'
             }`}
           >
@@ -328,7 +330,7 @@ export const StaffAuditView: React.FC = () => {
           </button>
           <button
             onClick={() => setTab('settings')}
-            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg cursor-pointer ${
+            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg cursor-pointer whitespace-nowrap shrink-0 ${
               tab === 'settings' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600'
             }`}
           >

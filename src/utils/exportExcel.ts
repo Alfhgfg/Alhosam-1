@@ -7,6 +7,66 @@ export interface ExcelSheetData {
   footerRows?: (string | number)[][];
 }
 
+interface AndroidFileBridge {
+  saveFile: (base64Data: string, fileName: string, mimeType: string) => boolean;
+}
+
+function getAndroidFileBridge(): AndroidFileBridge | null {
+  if (typeof window === 'undefined') return null;
+  const w = window as unknown as { AndroidFileBridge?: AndroidFileBridge };
+  return w.AndroidFileBridge ?? null;
+}
+
+function bytesToBase64(bytes: Uint8Array): string {
+  let binary = '';
+  const chunkSize = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    const chunk = bytes.subarray(i, i + chunkSize);
+    binary += String.fromCharCode(...chunk);
+  }
+  return btoa(binary);
+}
+
+export function saveTextFileCrossPlatform(
+  content: string,
+  fileName: string,
+  mimeType: string
+): boolean {
+  const bridge = getAndroidFileBridge();
+  if (bridge) {
+    const encoder = new TextEncoder();
+    const bytes = encoder.encode(content);
+    return bridge.saveFile(bytesToBase64(bytes), fileName, mimeType);
+  }
+
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  a.click();
+  URL.revokeObjectURL(url);
+  return true;
+}
+
+export function writeWorkbookCrossPlatform(
+  wb: XLSX.WorkBook,
+  fileNameWithExt: string
+): void {
+  const bridge = getAndroidFileBridge();
+  if (bridge) {
+    const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' }) as ArrayBuffer;
+    const base64 = bytesToBase64(new Uint8Array(out));
+    const ok = bridge.saveFile(
+      base64,
+      fileNameWithExt,
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
+    if (ok) return;
+  }
+  XLSX.writeFile(wb, fileNameWithExt);
+}
+
 export function appendRtlSheet(
   wb: XLSX.WorkBook,
   sheet: ExcelSheetData
@@ -37,6 +97,5 @@ export function exportToExcel(fileName: string, sheets: ExcelSheetData[]): void 
     appendRtlSheet(wb, sheet);
   }
 
-  XLSX.writeFile(wb, `${fileName}.xlsx`);
+  writeWorkbookCrossPlatform(wb, `${fileName}.xlsx`);
 }
-

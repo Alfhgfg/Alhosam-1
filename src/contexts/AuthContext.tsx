@@ -1,7 +1,10 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { Capacitor } from '@capacitor/core';
 import {
+  getRedirectResult,
   onAuthStateChanged,
   signInWithPopup,
+  signInWithRedirect,
   signOut,
   type User,
 } from 'firebase/auth';
@@ -80,6 +83,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     testConnection();
+    getRedirectResult(auth).catch((err) => {
+      const code = (err as { code?: string })?.code || '';
+      if (code === 'auth/unauthorized-domain') {
+        setAuthError('النطاق غير مصرح به في إعدادات Firebase Auth.');
+      } else if (code && code !== 'auth/popup-closed-by-user') {
+        setAuthError('تعذر إتمام تسجيل الدخول عبر Google. يرجى المحاولة مرة أخرى.');
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -433,10 +444,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const signInWithGoogle = async () => {
     setAuthError(null);
+    if (Capacitor.isNativePlatform()) {
+      try {
+        await signInWithRedirect(auth, googleProvider);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        setAuthError(
+          msg.includes('network')
+            ? 'تعذر الاتصال بالإنترنت. يرجى التحقق من الشبكة والمحاولة مرة أخرى.'
+            : 'تعذر فتح تسجيل الدخول عبر Google على الهاتف.'
+        );
+      }
+      return;
+    }
+
     try {
       await signInWithPopup(auth, googleProvider);
     } catch (err) {
+      const code = (err as { code?: string })?.code || '';
       const msg = err instanceof Error ? err.message : String(err);
+      if (
+        code === 'auth/popup-blocked' ||
+        code === 'auth/operation-not-supported-in-this-environment'
+      ) {
+        try {
+          await signInWithRedirect(auth, googleProvider);
+          return;
+        } catch {
+          setAuthError('تعذر تسجيل الدخول عبر Google. يرجى المحاولة مرة أخرى.');
+          return;
+        }
+      }
       if (!msg.includes('popup-closed-by-user')) {
         setAuthError('تعذر تسجيل الدخول عبر Google. يرجى التحقق من السماح بالنوافذ المنبثقة.');
       }

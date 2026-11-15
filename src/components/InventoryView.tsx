@@ -105,10 +105,10 @@ export const InventoryView: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-1 p-1 bg-slate-200/70 rounded-xl">
+        <div className="flex items-center gap-1 p-1 bg-slate-200/70 rounded-xl max-w-full overflow-x-auto">
           <button
             onClick={() => setTab('levels')}
-            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg cursor-pointer ${
+            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg cursor-pointer whitespace-nowrap shrink-0 ${
               tab === 'levels' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600'
             }`}
           >
@@ -117,7 +117,7 @@ export const InventoryView: React.FC = () => {
           {canStocktake && (
             <button
               onClick={() => setTab('stocktake')}
-              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg cursor-pointer ${
+              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg cursor-pointer whitespace-nowrap shrink-0 ${
                 tab === 'stocktake'
                   ? 'bg-white text-slate-900 shadow-xs'
                   : 'text-slate-600'
@@ -128,7 +128,7 @@ export const InventoryView: React.FC = () => {
           )}
           <button
             onClick={() => setTab('movements')}
-            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg cursor-pointer ${
+            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg cursor-pointer whitespace-nowrap shrink-0 ${
               tab === 'movements'
                 ? 'bg-white text-slate-900 shadow-xs'
                 : 'text-slate-600'

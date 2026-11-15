@@ -206,7 +206,7 @@ const MainShell: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-[100dvh] bg-slate-50 flex">
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:shrink-0 bg-white border-l border-slate-200 sticky top-0 h-screen no-print">
         <div className="h-16 px-5 border-b border-slate-200 flex items-center gap-3">
@@ -457,9 +457,50 @@ const MainShell: React.FC = () => {
           </div>
         )}
 
-        <main className="flex-1 p-4 lg:p-6 max-w-[1440px] w-full mx-auto">
+        <main className="flex-1 p-3.5 sm:p-4 lg:p-6 pb-24 lg:pb-6 max-w-[1440px] w-full mx-auto">
           {renderSection()}
         </main>
+
+        {/* Mobile Bottom Quick Navigation */}
+        <nav
+          aria-label="التنقل السريع"
+          className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur border-t border-slate-200 px-2 pt-1.5 pb-[max(0.45rem,env(safe-area-inset-bottom))] grid grid-cols-5 gap-1 no-print"
+        >
+          {(
+            [
+              { id: 'dashboard', label: 'الرئيسية', icon: LayoutDashboard },
+              { id: 'pos', label: 'الكاشير', icon: ShoppingCart },
+              { id: 'products', label: 'الأصناف', icon: Package },
+              { id: 'customers', label: 'العملاء', icon: Users },
+            ] as const
+          ).map((item) => {
+            const Icon = item.icon;
+            const active = currentNav.id === item.id;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => handleSelectNav(item.id)}
+                className={`flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl text-[11px] font-medium cursor-pointer transition-colors ${
+                  active
+                    ? 'text-emerald-700 bg-emerald-50 font-semibold'
+                    : 'text-slate-600'
+                }`}
+              >
+                <Icon className="w-4 h-4 shrink-0" />
+                <span className="truncate max-w-full">{item.label}</span>
+              </button>
+            );
+          })}
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(true)}
+            className="flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl text-[11px] font-medium text-slate-600 cursor-pointer"
+          >
+            <Menu className="w-4 h-4 shrink-0" />
+            <span>المزيد</span>
+          </button>
+        </nav>
       </div>
 
       {/* Rename Device Modal */}

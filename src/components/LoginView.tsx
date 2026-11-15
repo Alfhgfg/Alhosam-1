@@ -53,7 +53,7 @@ export const LoginView: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+      <div className="min-h-[100dvh] bg-slate-50 flex items-center justify-center p-4 sm:p-6">
         <div className="bg-white border border-slate-200 rounded-xl p-8 max-w-md w-full text-center space-y-3">
           <div className="w-10 h-10 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto" />
           <p className="text-slate-700 font-medium">جاري التحقق من الحساب والصلاحيات والجهاز...</p>
@@ -193,8 +193,8 @@ export const LoginView: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-6">
-      <div className="w-full max-w-lg bg-white border border-slate-200 rounded-2xl p-8 md:p-10 space-y-7">
+    <div className="min-h-[100dvh] bg-slate-50 flex flex-col justify-center items-center p-4 sm:p-6">
+      <div className="w-full max-w-lg bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 md:p-10 space-y-6 sm:space-y-7">
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 rounded-xl bg-emerald-700 text-white flex items-center justify-center shrink-0">
             <Store className="w-7 h-7" />
@@ -202,7 +202,7 @@ export const LoginView: React.FC = () => {
           <div>
             <h1 className="text-2xl font-bold text-slate-900">بقالة الحسام</h1>
             <p className="text-sm text-slate-500 mt-0.5">
-              النظام المحاسبي السحابي متعدد الأجهزة · ر.ي
+              النظام المحاسبي السحابي متعدد الأجهزة · الريال اليمني (ر.ي)
             </p>
           </div>
         </div>

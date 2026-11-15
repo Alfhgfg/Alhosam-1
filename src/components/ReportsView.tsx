@@ -2,7 +2,12 @@ import React, { useMemo, useState } from 'react';
 import * as XLSX from 'xlsx';
 import { CheckCircle2, FileSpreadsheet, Printer } from 'lucide-react';
 import { useStoreData } from '../contexts/StoreDataContext';
-import { appendRtlSheet, exportToExcel, type ExcelSheetData } from '../utils/exportExcel';
+import {
+  appendRtlSheet,
+  exportToExcel,
+  writeWorkbookCrossPlatform,
+  type ExcelSheetData,
+} from '../utils/exportExcel';
 import {
   formatDateOnly,
   formatDateTime,
@@ -710,7 +715,7 @@ export const ReportsView: React.FC = () => {
       appendRtlSheet(wb, sheet);
     }
 
-    XLSX.writeFile(wb, `${fileName}.xlsx`);
+    writeWorkbookCrossPlatform(wb, `${fileName}.xlsx`);
     notifyExport(fileName);
   };
 
